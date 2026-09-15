@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Todo } from '../types'
 
 const STORAGE_KEY = 'todo-app:todos'
@@ -14,8 +14,16 @@ function loadTodos(): Todo[] {
   }
 }
 
+export interface DeletedTodo {
+  todo: Todo
+  index: number
+  token: number
+}
+
 export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>(loadTodos)
+  const [lastDeleted, setLastDeleted] = useState<DeletedTodo | null>(null)
+  const deleteTokenRef = useRef(0)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
@@ -54,7 +62,26 @@ export function useTodos() {
   }
 
   function deleteTodo(id: string) {
+    const index = todos.findIndex((todo) => todo.id === id)
+    if (index === -1) return
+    deleteTokenRef.current += 1
+    setLastDeleted({ todo: todos[index], index, token: deleteTokenRef.current })
     setTodos((prev) => prev.filter((todo) => todo.id !== id))
+  }
+
+  function undoDelete() {
+    if (!lastDeleted) return
+    const { todo, index } = lastDeleted
+    setTodos((prev) => {
+      const next = [...prev]
+      next.splice(Math.min(index, next.length), 0, todo)
+      return next
+    })
+    setLastDeleted(null)
+  }
+
+  function dismissUndo() {
+    setLastDeleted(null)
   }
 
   function clearCompleted() {
@@ -73,5 +100,8 @@ export function useTodos() {
     deleteTodo,
     clearCompleted,
     toggleAll,
+    lastDeleted,
+    undoDelete,
+    dismissUndo,
   }
 }

@@ -1,14 +1,24 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 import { FilterBar } from './components/FilterBar'
+import { Toast } from './components/Toast'
 import { TodoForm } from './components/TodoForm'
 import { TodoList } from './components/TodoList'
 import { useTodos } from './hooks/useTodos'
 import type { Filter } from './types'
 
 function App() {
-  const { todos, addTodo, toggleTodo, editTodo, deleteTodo, clearCompleted } =
-    useTodos()
+  const {
+    todos,
+    addTodo,
+    toggleTodo,
+    editTodo,
+    deleteTodo,
+    clearCompleted,
+    lastDeleted,
+    undoDelete,
+    dismissUndo,
+  } = useTodos()
   const [filter, setFilter] = useState<Filter>('all')
 
   const activeCount = useMemo(
@@ -40,6 +50,15 @@ function App() {
           activeCount={activeCount}
           completedCount={completedCount}
           onClearCompleted={clearCompleted}
+        />
+      )}
+      {lastDeleted && (
+        <Toast
+          key={lastDeleted.token}
+          message={`"${lastDeleted.todo.text}" を削除しました`}
+          actionLabel="元に戻す"
+          onAction={undoDelete}
+          onDismiss={dismissUndo}
         />
       )}
     </div>
