@@ -2,7 +2,9 @@
 
 React + TypeScript + Vite で作られたシンプルなTODOアプリです。
 
-**デプロイURL: https://kuny518.github.io/todo/**
+**デプロイURL:**
+- GitHub Pages: https://kuny518.github.io/todo/
+- Vercel: https://todo-ten-swart-66.vercel.app
 
 ## 機能
 
@@ -24,4 +26,4 @@ npm run dev
 npm run build
 ```
 
-`main`ブランチへのpushで GitHub Actions が自動的にビルドし、GitHub Pages にデプロイします(`.github/workflows/deploy.yml`)。
+`main`ブランチへのpushで、GitHub Actions がGitHub Pagesへ(`.github/workflows/deploy.yml`)、Vercelが本番環境へ、それぞれ自動的にビルド・デプロイします。
